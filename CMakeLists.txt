@@ -4,7 +4,13 @@ project(quad_on_wheels)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-find_package(catkin REQUIRED)
+find_package(
+catkin REQUIRED
+)
+
+find_package(
+gazebo REQUIRED
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -108,7 +114,10 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-# include_directories(include)
+include_directories(
+include
+${GAZEBO_INCLUDE_DIRS}
+)
 
 ## Declare a C++ library
 # add_library(quad_on_wheels
@@ -179,3 +188,12 @@ catkin_package(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+link_directories(${GAZEBO_LIBRARY_DIRS})
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+
+add_library(hello_world SHARED src/helloworld_plugin.cpp)
+target_link_libraries(hello_world ${GAZEBO_LIBRARIES})
+
+add_library(motor_control_plugin SHARED src/motor_control_plugin.cpp)
+target_link_libraries(motor_control_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
