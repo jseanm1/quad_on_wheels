@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
 
 <robot name="quadrotor" xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:include filename="$(find quad-on-wheels)/urdf/quadrotor.urdf.xacro" />
+    <xacro:include filename="$(find quad_on_wheels)/urdf/quadrotor.urdf.xacro"/>
+    <xacro:quadrotor_base_macro />
 </robot>
