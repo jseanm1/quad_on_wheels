@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Start Gazebo with wg world running in (max) realtime -->
+  <include file="$(find quad_on_wheels)/launch/custom_world.launch"/>
+
+  <!-- Spawn simulated quadrotor uav -->
+  <include file="$(find quad_on_wheels)/launch/spawn_quadrotor.launch"/>
+
+</launch>

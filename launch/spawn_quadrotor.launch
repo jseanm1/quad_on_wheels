@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="name" default="quadrotor"/>
+  <arg name="model" default="$(find quad_on_wheels)/urdf/quadrotor.gazebo.xacro"/>
+
+  <arg name="x" default="0.0"/>
+  <arg name="y" default="0.0"/>
+  <arg name="z" default="0.0"/>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_robot" pkg="gazebo_ros" type="spawn_model"
+        args="-param robot_description
+           -urdf
+           -x $(arg x)
+           -y $(arg y)
+           -z $(arg z)
+           -model $(arg name)"
+        respawn="false" output="screen"/>
+
+</launch>
