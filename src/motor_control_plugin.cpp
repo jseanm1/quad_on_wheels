@@ -20,7 +20,7 @@ namespace gazebo {
     printf("\n\n\n\n-------\n\n\n\n");
   }
 
-  void onUpdate(const common::UpdateInfo &) {
+  void MotorControlPlugin::onUpdate(const common::UpdateInfo&) {
     std::cout << ".";
   }
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)

@@ -7,7 +7,7 @@ namespace gazebo {
     public:
       MotorControlPlugin();
       void Load(physics::ModelPtr, sdf::ElementPtr);
-      void onUpdate(const common::UpdateInfo);
+      void onUpdate(const common::UpdateInfo&);
 
     private:
       physics::ModelPtr model;
