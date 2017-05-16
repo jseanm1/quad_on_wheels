@@ -11,6 +11,7 @@ namespace gazebo {
 
     private:
       physics::ModelPtr model;
+      physics::LinkPtr linkM1, linkM2, linkM3, linkM4;
       event::ConnectionPtr updateConnection;
   };
 }

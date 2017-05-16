@@ -8,20 +8,28 @@ namespace gazebo {
   }
 
   void MotorControlPlugin::Load(physics::ModelPtr parent, sdf::ElementPtr) {
-    printf("\n\n\n\n-------\n\n\n\n");
     std::cout << "Loading MotorControlPlugin..." << std::endl;
 
     this->model = parent;
 
+    this->linkM1 = this->model->GetLink("motor1");
+    this->linkM2 = this->model->GetLink("motor2");
+    this->linkM3 = this->model->GetLink("motor3");
+    this->linkM4 = this->model->GetLink("motor4");
+
     this->updateConnection = event::Events::ConnectWorldUpdateBegin(boost::bind(&MotorControlPlugin::onUpdate, this, _1));
 
     std::cout << "MotorControlPlugin loaded." << std::endl; 
-    std::cout << "Plugin loaded" << std::endl;
-    printf("\n\n\n\n-------\n\n\n\n");
   }
 
   void MotorControlPlugin::onUpdate(const common::UpdateInfo&) {
-    std::cout << ".";
+    gazebo::math::Vector3 force(0.0, 0.0, 10.0);
+
+    linkM1->AddRelativeForce(force);
+    linkM2->AddRelativeForce(force);
+    linkM3->AddRelativeForce(force);
+    linkM4->AddRelativeForce(force);
   }
+
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)
 }
