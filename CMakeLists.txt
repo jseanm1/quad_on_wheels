@@ -6,6 +6,9 @@ project(quad_on_wheels)
 ## is used, also find other catkin packages
 find_package(
 catkin REQUIRED
+roscpp
+std_msgs
+geometry_msgs
 )
 
 find_package(
@@ -117,6 +120,7 @@ catkin_package(
 include_directories(
 include
 ${GAZEBO_INCLUDE_DIRS}
+${roscpp_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
