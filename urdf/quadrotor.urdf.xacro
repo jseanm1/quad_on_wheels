@@ -7,45 +7,45 @@
 
   <xacro:property name="pi" value="3.1415926535897931"/>
   
-  <xacro:property name="size_factor" value="1.0"/>
+  <xacro:property name="size_factor" value="0.3"/>
   
   <xacro:property name="base_radius" value="${size_factor/8}"/>
   
   <xacro:property name="wheel_axel_length" value="${size_factor}"/>
-  <xacro:property name="wheel_axel_rad" value="0.01"/>
+  <xacro:property name="wheel_axel_rad" value="${1/1000}"/>
 
   <xacro:property name="motor_axel_length" value="${size_factor}"/>
-  <xacro:property name="motor_axel_rad" value="0.01"/>
+  <xacro:property name="motor_axel_rad" value="${1/1000}"/>
 
   <xacro:property name="motor_rad" value="${size_factor/8}"/>
-  <xacro:property name="motor_h" value="0.005"/>
+  <xacro:property name="motor_h" value="${2/1000}"/>
 
   <xacro:property name="wheel_rad" value="${size_factor/2}"/>
-  <xacro:property name="wheel_h" value="0.05"/>
+  <xacro:property name="wheel_h" value="${1.5/1000}"/>
 
-  <xacro:property name="motor_connector_rad" value="0.005"/>
-  <xacro:property name="motor_connector_h" value="0.05"/>
+  <xacro:property name="motor_connector_rad" value="${1/1000}"/>
+  <xacro:property name="motor_connector_h" value="${20/1000}"/>
 
-  <xacro:property name="base_mass" value="0.5"/>
+  <xacro:property name="base_mass" value="${30/1000}"/>
   <xacro:property name="base_inertia" value="${2*base_mass*base_radius*base_radius/5}"/>
   
-  <xacro:property name="wheel_axel_mass" value="0.1"/>
+  <xacro:property name="wheel_axel_mass" value="${2.5/1000}"/>
   <xacro:property name="wheel_axel_in_ixx" value="${(wheel_axel_mass/12)*(3*wheel_axel_rad*wheel_axel_rad + wheel_axel_length*wheel_axel_length)}"/>
   <xacro:property name="wheel_axel_in_izz" value="${wheel_axel_mass*wheel_axel_rad*wheel_axel_rad/2}"/>
 
-  <xacro:property name="motor_axel_mass" value="0.1"/>
+  <xacro:property name="motor_axel_mass" value="${2.5/1000}"/>
   <xacro:property name="motor_axel_in_ixx" value="${(motor_axel_mass/12)*(3*motor_axel_rad*motor_axel_rad + motor_axel_length*motor_axel_length)}"/>
   <xacro:property name="motor_axel_in_izz" value="${motor_axel_mass*motor_axel_rad*motor_axel_rad/2}"/>
 
-  <xacro:property name="motor_mass" value="0.2"/>
+  <xacro:property name="motor_mass" value="${5/1000}"/>
   <xacro:property name="motor_ixx" value="${(motor_mass/12)*(3*motor_rad*motor_rad + motor_h*motor_h)}"/>
   <xacro:property name="motor_izz" value="${motor_mass*motor_rad*motor_rad/2}"/>
   
-  <xacro:property name="wheel_mass" value="0.5"/>
+  <xacro:property name="wheel_mass" value="${2.5/1000}"/>
   <xacro:property name="wheel_ixx" value="${(wheel_mass/12)*(6*wheel_rad*wheel_rad + wheel_h*wheel_h)}"/>
   <xacro:property name="wheel_izz" value="${wheel_mass*wheel_rad*wheel_rad}"/>
 
-  <xacro:property name="motor_connector_mass" value="0.01"/>
+  <xacro:property name="motor_connector_mass" value="${1/1000}"/>
   <xacro:property name="motor_connector_ixx" value="${(motor_connector_mass/12)*(3*motor_connector_rad*motor_connector_rad + motor_connector_h*motor_connector_h)}"/>
   <xacro:property name="motor_connector_izz" value="${motor_connector_mass*motor_connector_rad*motor_connector_rad/2}"/>
 
