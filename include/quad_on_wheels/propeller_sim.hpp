@@ -7,6 +7,7 @@ class PropellerSim {
     void getThrustAndTorque(double *, double *, double);
 
   private : 
+    // Propeller Spec for GWS 4x4
     struct {
       // Ct = m*rmp + c 
       double m = 0.00000009604;
