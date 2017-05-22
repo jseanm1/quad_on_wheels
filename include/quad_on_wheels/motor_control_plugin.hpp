@@ -1,6 +1,7 @@
 #ifndef QUAD_ON_WHEELS_NOTOR_CONTROL_PLUGIN_H
 #define QUAD_ON_WHEELS_NOTOR_CONTROL_PLUGIN_H
 
+#include <quad_on_wheels/propeller_sim.hpp>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
