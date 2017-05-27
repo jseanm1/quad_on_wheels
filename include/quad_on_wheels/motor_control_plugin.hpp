@@ -7,6 +7,7 @@
 #include <gazebo/common/common.hh>
 #include <ros/ros.h>
 #include <geometry_msgs/Wrench.h>
+#include <std_msgs/Empty.h>
 #include <boost/thread/mutex.hpp>
 #include "tf/transform_datatypes.h"
 #include "tf/LinearMath/Transform.h"
@@ -30,8 +31,11 @@ namespace gazebo {
       event::ConnectionPtr updateConnection;
 
       ros::Subscriber simpleControllerSub;
+      ros::Subscriber velocityController1Sub;
 
       void simpleControllerCb(geometry_msgs::Wrench::ConstPtr);
+
+      void velocityController1Cb(std_msgs::Empty::ConstPtr);
   };
 }
 

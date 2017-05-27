@@ -23,6 +23,8 @@ namespace gazebo {
     ros::NodeHandle nh;
     this->simpleControllerSub = nh.subscribe("/controller/simple", 10, &MotorControlPlugin::simpleControllerCb, this);
 
+    this->velocityController1Sub = nh.subscribe("/controller/velocity/1", 10, &MotorControlPlugin::velocityController1Cb, this);
+
     this->model = parent;
     this->linkBaseLink = this->model->GetLink("base_link");
     this->linkM1 = this->model->GetLink("motor1");
@@ -80,6 +82,26 @@ namespace gazebo {
     this->linkM3->AddRelativeTorque(torqueF3);
     this->linkM4->AddRelativeForce(forceF3);
     this->linkM4->AddRelativeTorque(torqueF3);
+  }
+
+  void MotorControlPlugin::velocityController1Cb(std_msgs::Empty::ConstPtr msg) {
+    // Access gz resources: START
+    this->gzMutex.lock();
+    geometry_msgs::Quaternion q;
+    q.w = this->gzPose.rot.w;
+    q.x = this->gzPose.rot.x;
+    q.y = this->gzPose.rot.y;
+    q.z = this->gzPose.rot.z;
+
+    // Access gz resources: END
+    this->gzMutex.unlock();
+
+    float thetaD = 0.523598776; // 30 degrees
+    tf::Quaternion tfQ;
+    tf::quaternionMsgToTF(q, tfQ);
+    double r,p,y;
+    tf::Matrix3x3 rot(tfQ);
+    rot.getRPY(r,p,y);
   }
 
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)
