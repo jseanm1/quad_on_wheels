@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <boost/bind.hpp>
 #include <geometry_msgs/Quaternion.h>
+#include <algorithm>
 
 namespace gazebo {
   MotorControlPlugin::MotorControlPlugin() {
@@ -68,9 +69,9 @@ namespace gazebo {
     tf::Matrix3x3 rot(tfQ);
     rot.getRPY(r,p,y);
 
-    float k1 = 10;
-    float k2 = 1.0;
-    float f3 = k1*(1.309 - p) + 1;
+    float k1 = 0.01;
+    float k2 = 0.01;
+    float f3 = k1*(1.309 - p) + 0.01;
     float t3 = k2*(-y);
 
     gazebo::math::Vector3 forceF3(wrench->force.x, wrench->force.y,f3);
@@ -88,6 +89,7 @@ namespace gazebo {
     // Access gz resources: START
     this->gzMutex.lock();
     geometry_msgs::Quaternion q;
+    float vx = this->gzLinVel.x;
     q.w = this->gzPose.rot.w;
     q.x = this->gzPose.rot.x;
     q.y = this->gzPose.rot.y;
@@ -96,12 +98,60 @@ namespace gazebo {
     // Access gz resources: END
     this->gzMutex.unlock();
 
-    float thetaD = 0.523598776; // 30 degrees
     tf::Quaternion tfQ;
     tf::quaternionMsgToTF(q, tfQ);
     double r,p,y;
     tf::Matrix3x3 rot(tfQ);
     rot.getRPY(r,p,y);
+
+    float vx_d = 1.0;
+    float kvx = 1.0;
+    float p_d;
+    float p_max = 1.306;
+    float kp;
+    float w = 100;
+    float dwp;
+    float ky;
+    float dwy;
+
+    double *thrustM1, *thrustM2, *thrustM3, *thrustM4;
+    double *torqueM1, *torqueM2, *torqueM3, *torqueM4;
+    double rpsM1, rpsM2, rpsM3, rpsM4;
+
+    // Velocity controller
+    p_d = std::max(kvx * (vx_d - vx), p_max);
+    dwp = kp * (p_d - p);
+
+    // Yaw controller
+    dwy = ky * (-y);
+
+    rpsM1 = w - dwp + dwy;
+    rpsM2 = w - dwp - dwy;
+    rpsM3 = w + dwp + dwy;
+    rpsM4 = w + dwp - dwy;
+
+    this->propellerSim.getThrustAndTorque(thrustM1, torqueM1, rpsM1);
+    this->propellerSim.getThrustAndTorque(thrustM2, torqueM2, rpsM2);
+    this->propellerSim.getThrustAndTorque(thrustM3, torqueM3, rpsM3);
+    this->propellerSim.getThrustAndTorque(thrustM4, torqueM4, rpsM4);
+
+    gazebo::math::Vector3 fvM1(0.0, 0.0, *thrustM1);
+    this->linkM1->AddRelativeForce(fvM1);
+    gazebo::math::Vector3 fvM2(0.0, 0.0, *thrustM2);
+    this->linkM2->AddRelativeForce(fvM2);
+    gazebo::math::Vector3 fvM3(0.0, 0.0, *thrustM3);
+    this->linkM3->AddRelativeForce(fvM3);
+    gazebo::math::Vector3 fvM4(0.0, 0.0, *thrustM4);
+    this->linkM4->AddRelativeForce(fvM4);
+
+    gazebo::math::Vector3 tvM1(0.0, 0.0, -*torqueM1);
+    this->linkM1->AddRelativeTorque(tvM1);
+    gazebo::math::Vector3 tvM2(0.0, 0.0, *torqueM2);
+    this->linkM2->AddRelativeTorque(tvM2);
+    gazebo::math::Vector3 tvM3(0.0, 0.0, -*torqueM3);
+    this->linkM3->AddRelativeTorque(tvM3);
+    gazebo::math::Vector3 tvM4(0.0, 0.0, *torqueM4);
+    this->linkM4->AddRelativeTorque(tvM4);
   }
 
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)

@@ -14,7 +14,7 @@ PropellerSim::PropellerSim() {
   this.d5p = pow(this.propConst.D, 5) * this.propConst.p;
 } 
 
-double PropellerSim::getThurstAndTorqur(double *thrust, double *torque, double rps) {
+double PropellerSim::getThurstAndTorque(double *thrust, double *torque, double rps) {
   double rpm = rps * 60;
   
   // T = CT p n2  D4

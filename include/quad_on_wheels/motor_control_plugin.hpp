@@ -26,6 +26,8 @@ namespace gazebo {
       gazebo::math::Pose gzPose;
       gazebo::math::Vector3 gzLinVel, gzLinAcc, gzAngVel, gzAngAcc;
 
+      PropellerSim propellerSim;
+
       boost::mutex gzMutex;
       
       event::ConnectionPtr updateConnection;
