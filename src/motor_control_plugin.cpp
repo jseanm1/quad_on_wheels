@@ -32,6 +32,7 @@ namespace gazebo {
     this->Kvx = 0.01;
     this->Kp = 0.01;
     this->Ky = 0.01;
+    this->W = 0.0;
   }
 
   void MotorControlPlugin::Load(physics::ModelPtr parent, sdf::ElementPtr) {
@@ -170,6 +171,7 @@ namespace gazebo {
     float kvx = this->Kvx;
     float kp = this->Kp;
     float ky = this->Ky;
+    float w = this->W;
 
     // Access gains : END
     this->gainMutex.unlock();
@@ -177,7 +179,6 @@ namespace gazebo {
     float vx_d = 1.0;
     float p_d;
     float p_max = 1.306;
-    float w = 100;
     float dwp;
     float dwy;
 
@@ -225,8 +226,9 @@ namespace gazebo {
     this->Kvx = req.kvx;
     this->Kp = req.kp;
     this->Ky = req.ky;
+    this->W = req.w;
 
-    std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << std::endl;
+    std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << ", W: " << this->W << std::endl;
 
     res.result = true;
     return true;
