@@ -228,6 +228,7 @@ namespace gazebo {
 
     std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << std::endl;
 
+    res.result = true;
     return true;
   }
 
