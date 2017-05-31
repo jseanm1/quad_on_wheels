@@ -9,6 +9,7 @@ catkin REQUIRED
 roscpp
 std_msgs
 geometry_msgs
+message_generation
 )
 
 find_package(
@@ -56,11 +57,10 @@ gazebo REQUIRED
 # )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  UpdateGains.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -70,10 +70,10 @@ gazebo REQUIRED
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+  DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -201,3 +201,4 @@ target_link_libraries(hello_world ${GAZEBO_LIBRARIES})
 
 add_library(motor_control_plugin SHARED src/motor_control_plugin.cpp src/propeller_sim.cpp)
 target_link_libraries(motor_control_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})
+add_dependencies(motor_control_plugin   ${quad_on_wheels_EXPORTED_TARGETS})

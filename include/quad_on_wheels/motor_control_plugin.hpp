@@ -2,6 +2,7 @@
 #define QUAD_ON_WHEELS_NOTOR_CONTROL_PLUGIN_H
 
 #include <quad_on_wheels/propeller_sim.hpp>
+#include <quad_on_wheels/UpdateGains.h>
 #include <gazebo/gazebo.hh>
 #include <gazebo/physics/physics.hh>
 #include <gazebo/common/common.hh>
@@ -30,20 +31,27 @@ namespace gazebo {
 
       boost::mutex gzMutex;
       boost::mutex tqMutex;
+      boost::mutex gainMutex;
 
       double tM1, tM2, tM3, tM4;
       double qM1, qM2, qM3, qM4;
+
+      double Kvx, Kp, Ky;
       
       event::ConnectionPtr updateConnection;
 
       ros::Subscriber simpleControllerSub;
       ros::Subscriber velocityController1Sub;
 
+      ros::ServiceServer updateGainsServer;
+
       void initTnQ();
+      void initGains();
 
       void simpleControllerCb(geometry_msgs::Wrench::ConstPtr);
-
       void velocityController1Cb(std_msgs::Empty::ConstPtr);
+
+      bool updateGains(quad_on_wheels::UpdateGains::Request &, quad_on_wheels::UpdateGains::Response &);
   };
 }
 

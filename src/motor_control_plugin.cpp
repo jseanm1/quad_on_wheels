@@ -8,6 +8,9 @@ namespace gazebo {
   MotorControlPlugin::MotorControlPlugin() {
     std::cout << "Initializing thrust and torque values" << std::endl;
     this->initTnQ();
+
+    std::cout << "Initializing gains" << std::endl;
+    this->initGains();
   }
 
   void MotorControlPlugin::initTnQ() {
@@ -21,6 +24,14 @@ namespace gazebo {
     this->qM2 = 0.0;
     this->qM3 = 0.0;
     this->qM4 = 0.0;
+  }
+
+  void MotorControlPlugin::initGains() {
+    // initialize gains
+    boost::mutex::scoped_lock(this->gainMutex);
+    this->Kvx = 0.01;
+    this->Kp = 0.01;
+    this->Ky = 0.01;
   }
 
   void MotorControlPlugin::Load(physics::ModelPtr parent, sdf::ElementPtr) {
@@ -39,6 +50,9 @@ namespace gazebo {
     this->simpleControllerSub = nh.subscribe("/controller/simple", 10, &MotorControlPlugin::simpleControllerCb, this);
 
     this->velocityController1Sub = nh.subscribe("/controller/velocity/1", 10, &MotorControlPlugin::velocityController1Cb, this);
+
+    // Advertise Services
+    this->updateGainsServer = nh.advertiseService("/updateGains", &MotorControlPlugin::updateGains, this);
 
     this->model = parent;
     this->linkBaseLink = this->model->GetLink("base_link");
@@ -150,14 +164,21 @@ namespace gazebo {
     tf::Matrix3x3 rot(tfQ);
     rot.getRPY(r,p,y);
 
+    // Access gains : START
+    this->gainMutex.lock();
+
+    float kvx = this->Kvx;
+    float kp = this->Kp;
+    float ky = this->Ky;
+
+    // Access gains : END
+    this->gainMutex.unlock();
+
     float vx_d = 1.0;
-    float kvx = 1.0;
     float p_d;
     float p_max = 1.306;
-    float kp;
     float w = 100;
     float dwp;
-    float ky;
     float dwy;
 
     double thrustM1, thrustM2, thrustM3, thrustM4;
@@ -197,6 +218,17 @@ namespace gazebo {
 
     // Access thrust and torque values : END
     this->tqMutex.unlock();
+  }
+
+  bool MotorControlPlugin::updateGains(quad_on_wheels::UpdateGains::Request &req, quad_on_wheels::UpdateGains::Response &res) {
+    boost::mutex::scoped_lock(this->gainMutex);
+    this->Kvx = req.kvx;
+    this->Kp = req.kp;
+    this->Ky = req.ky;
+
+    std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << std::endl;
+
+    return true;
   }
 
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)
