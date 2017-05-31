@@ -192,6 +192,7 @@ namespace gazebo {
 
     // Yaw controller
     dwy = ky * (-y);
+    dwy = 0; // Disable yaw controller
 
     rpsM1 = w - dwp + dwy;
     rpsM2 = w - dwp - dwy;
