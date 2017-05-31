@@ -114,8 +114,8 @@ namespace gazebo {
     float ky;
     float dwy;
 
-    double *thrustM1, *thrustM2, *thrustM3, *thrustM4;
-    double *torqueM1, *torqueM2, *torqueM3, *torqueM4;
+    double thrustM1, thrustM2, thrustM3, thrustM4;
+    double torqueM1, torqueM2, torqueM3, torqueM4;
     double rpsM1, rpsM2, rpsM3, rpsM4;
 
     // Velocity controller
@@ -135,22 +135,22 @@ namespace gazebo {
     this->propellerSim.getThrustAndTorque(thrustM3, torqueM3, rpsM3);
     this->propellerSim.getThrustAndTorque(thrustM4, torqueM4, rpsM4);
 
-    gazebo::math::Vector3 fvM1(0.0, 0.0, *thrustM1);
+    gazebo::math::Vector3 fvM1(0.0, 0.0, thrustM1);
     this->linkM1->AddRelativeForce(fvM1);
-    gazebo::math::Vector3 fvM2(0.0, 0.0, *thrustM2);
+    gazebo::math::Vector3 fvM2(0.0, 0.0, thrustM2);
     this->linkM2->AddRelativeForce(fvM2);
-    gazebo::math::Vector3 fvM3(0.0, 0.0, *thrustM3);
+    gazebo::math::Vector3 fvM3(0.0, 0.0, thrustM3);
     this->linkM3->AddRelativeForce(fvM3);
-    gazebo::math::Vector3 fvM4(0.0, 0.0, *thrustM4);
+    gazebo::math::Vector3 fvM4(0.0, 0.0, thrustM4);
     this->linkM4->AddRelativeForce(fvM4);
 
-    gazebo::math::Vector3 tvM1(0.0, 0.0, -*torqueM1);
+    gazebo::math::Vector3 tvM1(0.0, 0.0, -torqueM1);
     this->linkM1->AddRelativeTorque(tvM1);
-    gazebo::math::Vector3 tvM2(0.0, 0.0, *torqueM2);
+    gazebo::math::Vector3 tvM2(0.0, 0.0, torqueM2);
     this->linkM2->AddRelativeTorque(tvM2);
-    gazebo::math::Vector3 tvM3(0.0, 0.0, -*torqueM3);
+    gazebo::math::Vector3 tvM3(0.0, 0.0, -torqueM3);
     this->linkM3->AddRelativeTorque(tvM3);
-    gazebo::math::Vector3 tvM4(0.0, 0.0, *torqueM4);
+    gazebo::math::Vector3 tvM4(0.0, 0.0, torqueM4);
     this->linkM4->AddRelativeTorque(tvM4);
   }
 

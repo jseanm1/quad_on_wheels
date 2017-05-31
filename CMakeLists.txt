@@ -199,5 +199,5 @@ list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 add_library(hello_world SHARED src/helloworld_plugin.cpp)
 target_link_libraries(hello_world ${GAZEBO_LIBRARIES})
 
-add_library(motor_control_plugin SHARED src/motor_control_plugin.cpp)
+add_library(motor_control_plugin SHARED src/motor_control_plugin.cpp src/propeller_sim.cpp)
 target_link_libraries(motor_control_plugin ${GAZEBO_LIBRARIES} ${Boost_LIBRARIES})

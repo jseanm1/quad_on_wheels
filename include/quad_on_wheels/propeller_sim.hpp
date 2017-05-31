@@ -4,7 +4,7 @@
 class PropellerSim {
   public : 
     PropellerSim();
-    void getThrustAndTorque(double *, double *, double);
+    void getThrustAndTorque(double &, double &, double);
 
   private : 
     // Propeller Spec for GWS 4x4
