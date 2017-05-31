@@ -6,7 +6,21 @@
 
 namespace gazebo {
   MotorControlPlugin::MotorControlPlugin() {
+    std::cout << "Initializing thrust and torque values" << std::endl;
+    this->initTnQ();
+  }
 
+  void MotorControlPlugin::initTnQ() {
+    // initialize thrusts and torques to zero
+    boost::mutex::scoped_lock(this->tqMutex);
+    this->tM1 = 0.0;
+    this->tM2 = 0.0;
+    this->tM3 = 0.0;
+    this->tM4 = 0.0;
+    this->qM1 = 0.0;
+    this->qM2 = 0.0;
+    this->qM3 = 0.0;
+    this->qM4 = 0.0;
   }
 
   void MotorControlPlugin::Load(physics::ModelPtr parent, sdf::ElementPtr) {
@@ -40,12 +54,44 @@ namespace gazebo {
 
   void MotorControlPlugin::onUpdate(const common::UpdateInfo&) {
     // Update state of the base link
-    boost::mutex::scoped_lock(this->gzMutex);
+    // Access gz resources: START
+    this->gzMutex.lock();
+
     this->gzPose = this->linkBaseLink->GetWorldPose();
     this->gzLinVel = this->linkBaseLink->GetWorldLinearVel();
     this->gzLinAcc = this->linkBaseLink->GetWorldLinearAccel();
     this->gzAngVel = this->linkBaseLink->GetWorldAngularVel();
     this->gzAngAcc = this->linkBaseLink->GetWorldAngularAccel();
+
+    // Access gz resources : END
+    this->gzMutex.unlock();
+
+    // Access thrust and torque values : START
+    this->tqMutex.lock();
+
+    gazebo::math::Vector3 tVM1(0.0, 0.0, this->tM1);
+    gazebo::math::Vector3 tVM2(0.0, 0.0, this->tM2);
+    gazebo::math::Vector3 tVM3(0.0, 0.0, this->tM3);
+    gazebo::math::Vector3 tVM4(0.0, 0.0, this->tM4);
+
+    gazebo::math::Vector3 qVM1(0.0, 0.0, this->qM1);
+    gazebo::math::Vector3 qVM2(0.0, 0.0, this->qM2);
+    gazebo::math::Vector3 qVM3(0.0, 0.0, this->qM3);
+    gazebo::math::Vector3 qVM4(0.0, 0.0, this->qM4);
+
+    // Access thrust and torque values : END
+    this->tqMutex.unlock();
+
+    // Apply forces and torques to the model
+    this->linkM1->AddRelativeForce(tVM1);
+    this->linkM2->AddRelativeForce(tVM2);
+    this->linkM3->AddRelativeForce(tVM3);
+    this->linkM4->AddRelativeForce(tVM4);
+
+    this->linkM1->AddRelativeTorque(qVM1);
+    this->linkM2->AddRelativeTorque(qVM2);
+    this->linkM3->AddRelativeTorque(qVM3);
+    this->linkM4->AddRelativeTorque(qVM4);
   }
 
   void MotorControlPlugin::simpleControllerCb(geometry_msgs::Wrench::ConstPtr wrench) {
@@ -135,23 +181,22 @@ namespace gazebo {
     this->propellerSim.getThrustAndTorque(thrustM3, torqueM3, rpsM3);
     this->propellerSim.getThrustAndTorque(thrustM4, torqueM4, rpsM4);
 
-    gazebo::math::Vector3 fvM1(0.0, 0.0, thrustM1);
-    this->linkM1->AddRelativeForce(fvM1);
-    gazebo::math::Vector3 fvM2(0.0, 0.0, thrustM2);
-    this->linkM2->AddRelativeForce(fvM2);
-    gazebo::math::Vector3 fvM3(0.0, 0.0, thrustM3);
-    this->linkM3->AddRelativeForce(fvM3);
-    gazebo::math::Vector3 fvM4(0.0, 0.0, thrustM4);
-    this->linkM4->AddRelativeForce(fvM4);
+    // Update new thrust and torque values
+    // Access thrust and torque values : START
+    this->tqMutex.lock();
 
-    gazebo::math::Vector3 tvM1(0.0, 0.0, -torqueM1);
-    this->linkM1->AddRelativeTorque(tvM1);
-    gazebo::math::Vector3 tvM2(0.0, 0.0, torqueM2);
-    this->linkM2->AddRelativeTorque(tvM2);
-    gazebo::math::Vector3 tvM3(0.0, 0.0, -torqueM3);
-    this->linkM3->AddRelativeTorque(tvM3);
-    gazebo::math::Vector3 tvM4(0.0, 0.0, torqueM4);
-    this->linkM4->AddRelativeTorque(tvM4);
+    this->tM1 = thrustM1;
+    this->tM2 = thrustM2;
+    this->tM3 = thrustM3;
+    this->tM4 = thrustM4;
+
+    this->qM1 = -torqueM1; // Clockwise rotation
+    this->qM2 = torqueM2;
+    this->qM3 = -torqueM3; // Clockwise rotation
+    this->qM4 = torqueM4;
+
+    // Access thrust and torque values : END
+    this->tqMutex.unlock();
   }
 
   GZ_REGISTER_MODEL_PLUGIN(MotorControlPlugin)

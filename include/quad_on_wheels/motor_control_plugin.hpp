@@ -29,11 +29,17 @@ namespace gazebo {
       PropellerSim propellerSim;
 
       boost::mutex gzMutex;
+      boost::mutex tqMutex;
+
+      double tM1, tM2, tM3, tM4;
+      double qM1, qM2, qM3, qM4;
       
       event::ConnectionPtr updateConnection;
 
       ros::Subscriber simpleControllerSub;
       ros::Subscriber velocityController1Sub;
+
+      void initTnQ();
 
       void simpleControllerCb(geometry_msgs::Wrench::ConstPtr);
 
