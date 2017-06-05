@@ -29,9 +29,10 @@ namespace gazebo {
   void MotorControlPlugin::initGains() {
     // initialize gains
     boost::mutex::scoped_lock(this->gainMutex);
-    this->Kvx = 0.01;
-    this->Kp = 0.01;
-    this->Ky = 0.01;
+    this->Kvx_p = 0.01;
+    this->Kp_p = 0.01;
+    this->Kp_d = 0.01;
+    this->Ky_p = 0.01;
     this->W = 0.0;
   }
 
@@ -151,6 +152,7 @@ namespace gazebo {
     this->gzMutex.lock();
     geometry_msgs::Quaternion q;
     float vx = this->gzLinVel.x;
+    float vp = this->gzAngVel.y;
     q.w = this->gzPose.rot.w;
     q.x = this->gzPose.rot.x;
     q.y = this->gzPose.rot.y;
@@ -170,15 +172,16 @@ namespace gazebo {
     // Access gains : START
     this->gainMutex.lock();
 
-    float kvx = this->Kvx;
-    float kp = this->Kp;
-    float ky = this->Ky;
+    float kvx_p = this->Kvx_p;
+    float kp_p = this->Kp_p;
+    float kp_d = this->Kp_d;
+    float ky_p = this->Ky_p;
     float w = this->W;
 
     // Access gains : END
     this->gainMutex.unlock();
 
-    float vx_d = 0.2;
+    float vx_d = 5.0;
     float p_d;
     float p_max = 1.306;
     float dwp;
@@ -189,12 +192,12 @@ namespace gazebo {
     double rpsM1, rpsM2, rpsM3, rpsM4;
 
     // Velocity controller
-    p_d = std::min(kvx * (vx_d - vx), p_max);
-    dwp = kp * (1.306 - p);
+    p_d = std::min(kvx_p * (vx_d - vx), p_max);
+    dwp = kp_p * ((p_d - p) - kp_d * vp);
     // std::cout << "X: " << this->gzLinVel.x << ", y:" << this->gzLinVel.y << ", z: " << this->gzLinVel.z << std::endl;
     // std::cout << "pd: " << p_d << ", dwp: " << dwp << std::endl;
     // Yaw controller
-    dwy = ky * (y);
+    dwy = ky_p * (y);
     // dwy = 0; // Disable yaw controller
 
     rpsM1 = w - dwp + dwy;
@@ -232,9 +235,10 @@ namespace gazebo {
 
   bool MotorControlPlugin::updateGains(quad_on_wheels::UpdateGains::Request &req, quad_on_wheels::UpdateGains::Response &res) {
     boost::mutex::scoped_lock(this->gainMutex);
-    this->Kvx = req.kvx;
-    this->Kp = req.kp;
-    this->Ky = req.ky;
+    this->Kvx_p = req.kvx_p;
+    this->Kp_p = req.kp_p;
+    this->Kp_d = req.kp_d;
+    this->Ky_p = req.ky_p;
     this->W = req.w;
 
     //std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << ", W: " << this->W << std::endl;
