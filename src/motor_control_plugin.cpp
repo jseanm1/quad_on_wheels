@@ -165,6 +165,8 @@ namespace gazebo {
     tf::Matrix3x3 rot(tfQ);
     rot.getRPY(r,p,y);
 
+    //std::cout << "r: " << r << ", p: " << p << ", y: " << y << std::endl;
+
     // Access gains : START
     this->gainMutex.lock();
 
@@ -176,7 +178,7 @@ namespace gazebo {
     // Access gains : END
     this->gainMutex.unlock();
 
-    float vx_d = 1.0;
+    float vx_d = 0.2;
     float p_d;
     float p_max = 1.306;
     float dwp;
@@ -187,12 +189,13 @@ namespace gazebo {
     double rpsM1, rpsM2, rpsM3, rpsM4;
 
     // Velocity controller
-    p_d = std::max(kvx * (vx_d - vx), p_max);
-    dwp = kp * (p_d - p);
-
+    p_d = std::min(kvx * (vx_d - vx), p_max);
+    dwp = kp * (1.306 - p);
+    // std::cout << "X: " << this->gzLinVel.x << ", y:" << this->gzLinVel.y << ", z: " << this->gzLinVel.z << std::endl;
+    // std::cout << "pd: " << p_d << ", dwp: " << dwp << std::endl;
     // Yaw controller
-    dwy = ky * (-y);
-    dwy = 0; // Disable yaw controller
+    dwy = ky * (y);
+    // dwy = 0; // Disable yaw controller
 
     rpsM1 = w - dwp + dwy;
     rpsM2 = w - dwp - dwy;
@@ -203,6 +206,11 @@ namespace gazebo {
     this->propellerSim.getThrustAndTorque(thrustM2, torqueM2, rpsM2);
     this->propellerSim.getThrustAndTorque(thrustM3, torqueM3, rpsM3);
     this->propellerSim.getThrustAndTorque(thrustM4, torqueM4, rpsM4);
+
+    std::cout << thrustM1 << "," << torqueM1 << "," << rpsM1 << ","
+      << thrustM2 << "," << torqueM2 << "," << rpsM2 << ","
+      << thrustM3 << "," << torqueM3 << "," << rpsM3 << ","
+      << thrustM4 << "," << torqueM4 << "," << rpsM4 << std::endl;
 
     // Update new thrust and torque values
     // Access thrust and torque values : START
@@ -229,7 +237,7 @@ namespace gazebo {
     this->Ky = req.ky;
     this->W = req.w;
 
-    std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << ", W: " << this->W << std::endl;
+    //std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << ", W: " << this->W << std::endl;
 
     res.result = true;
     return true;
