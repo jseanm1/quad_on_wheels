@@ -200,10 +200,17 @@ namespace gazebo {
     dwy = ky_p * (y);
     // dwy = 0; // Disable yaw controller
 
-    rpsM1 = w - dwp + dwy;
-    rpsM2 = w - dwp - dwy;
+    // Control strategy 1
+    // rpsM1 = w - dwp + dwy;
+    // rpsM2 = w - dwp - dwy;
+    // rpsM3 = w + dwp + dwy;
+    // rpsM4 = w + dwp - dwy;
+
+    // Control strategy 2
+    rpsM1 = w + dwy;
+    rpsM2 = w;
     rpsM3 = w + dwp + dwy;
-    rpsM4 = w + dwp - dwy;
+    rpsM4 = w + dwp;
 
     this->propellerSim.getThrustAndTorque(thrustM1, torqueM1, rpsM1);
     this->propellerSim.getThrustAndTorque(thrustM2, torqueM2, rpsM2);
