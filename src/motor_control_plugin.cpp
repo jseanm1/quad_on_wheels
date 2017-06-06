@@ -33,6 +33,7 @@ namespace gazebo {
     this->Kp_p = 0.01;
     this->Kp_d = 0.01;
     this->Ky_p = 0.01;
+    this->Ky_d = 0.01;
     this->W = 0.0;
   }
 
@@ -153,6 +154,7 @@ namespace gazebo {
     geometry_msgs::Quaternion q;
     float vx = this->gzLinVel.x;
     float vp = this->gzAngVel.y;
+    float vy = this->gzAngVel.z;
     q.w = this->gzPose.rot.w;
     q.x = this->gzPose.rot.x;
     q.y = this->gzPose.rot.y;
@@ -176,12 +178,13 @@ namespace gazebo {
     float kp_p = this->Kp_p;
     float kp_d = this->Kp_d;
     float ky_p = this->Ky_p;
+    float ky_d = this->Ky_d;
     float w = this->W;
 
     // Access gains : END
     this->gainMutex.unlock();
 
-    float vx_d = 5.0;
+    float vx_d = 1.0;
     float p_d;
     float p_max = 1.306;
     float dwp;
@@ -197,7 +200,7 @@ namespace gazebo {
     // std::cout << "X: " << this->gzLinVel.x << ", y:" << this->gzLinVel.y << ", z: " << this->gzLinVel.z << std::endl;
     // std::cout << "pd: " << p_d << ", dwp: " << dwp << std::endl;
     // Yaw controller
-    dwy = ky_p * (y);
+    dwy = ky_p * ((y) + ky_d * vy);
     // dwy = 0; // Disable yaw controller
 
     // Control strategy 1
@@ -217,10 +220,10 @@ namespace gazebo {
     this->propellerSim.getThrustAndTorque(thrustM3, torqueM3, rpsM3);
     this->propellerSim.getThrustAndTorque(thrustM4, torqueM4, rpsM4);
 
-    std::cout << thrustM1 << "," << torqueM1 << "," << rpsM1 << ","
-      << thrustM2 << "," << torqueM2 << "," << rpsM2 << ","
-      << thrustM3 << "," << torqueM3 << "," << rpsM3 << ","
-      << thrustM4 << "," << torqueM4 << "," << rpsM4 << std::endl;
+    // std::cout << thrustM1 << "," << torqueM1 << "," << rpsM1 << ","
+    //   << thrustM2 << "," << torqueM2 << "," << rpsM2 << ","
+    //   << thrustM3 << "," << torqueM3 << "," << rpsM3 << ","
+    //   << thrustM4 << "," << torqueM4 << "," << rpsM4 << std::endl;
 
     // Update new thrust and torque values
     // Access thrust and torque values : START
@@ -246,6 +249,7 @@ namespace gazebo {
     this->Kp_p = req.kp_p;
     this->Kp_d = req.kp_d;
     this->Ky_p = req.ky_p;
+    this->Ky_d = req.ky_d;
     this->W = req.w;
 
     //std::cout << "Kvx: " << this->Kvx << ", Kp: " << this->Kp << ", Ky: " << this->Ky << ", W: " << this->W << std::endl;

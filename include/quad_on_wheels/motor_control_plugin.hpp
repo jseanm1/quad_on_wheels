@@ -36,7 +36,7 @@ namespace gazebo {
       double tM1, tM2, tM3, tM4;
       double qM1, qM2, qM3, qM4;
 
-      double Kvx_p, Kp_p, Kp_d, Ky_p, W;
+      double Kvx_p, Kp_p, Kp_d, Ky_p, Ky_d, W;
       
       event::ConnectionPtr updateConnection;
 

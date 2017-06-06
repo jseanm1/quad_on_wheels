@@ -1,6 +1,8 @@
-float64 kvx
-float64 kp
-float64 ky
+float64 kvx_p
+float64 kp_p
+float64 kp_d
+float64 ky_p
+float64 ky_d
 float64 w
 ---
 bool result 
